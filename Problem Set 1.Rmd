@@ -1,0 +1,91 @@
+---
+title: "CSSS 569 Visualizing Data and Models"
+author: "Marjorie Blanco"
+date: "January 18, 2018"
+output:
+  word_document: default
+  html_document: default
+subtitle: Problem Set 1
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(ggplot2)
+```
+
+# Problem 1: Critique a Visual Display of Scientific Information (VDSI)
+
+In 2015, CNN posted this chart in effort to promote a new CNN show, High Profits. 
+
+![Source: CNN High Profits](CNN_marijuana_chart.PNG)
+
+
+http://www.cnn.com/shows/high-profits?sr=tw053115highprofts8pSpagePhoto
+
+Thee data used to create this chart is based on Gallup data from 2013.  The data points are the percentage of each age group that's tried marijuana. One of the data points can be interprated as  36% of Americans 18 to 29 years old have tried pot. 
+
+This is nothing more than a bizarre pie chart.  Pie chart is one of the most unpopular methods of visualizing data.  A few things to note is that the percentages add up to more than 100. It is not apparent why the pie chart took the form of a marijuana leaf.  This makes it more difficult to read for percentages.
+
+```{r}
+dat <- data.frame(
+  age = factor(c("18-29", "30-49", "50-64", "65+")),
+  percentage = c(36,49,44,17)
+)
+
+ggplot(data=dat, aes(x=age, y=percentage)) +
+  geom_bar(stat="identity") +
+  xlab("Age Group") +
+  ylab("Percentage of Americans who have tried weed")
+```
+
+# Problem 2: Graphical Skills Test
+
+```{r}
+dat <- read_csv("http://faculty.washington.edu/cadolph/vis/iverRevised.csv")
+dat$effectiveParties <- as.numeric(dat$effectiveParties)
+dat$povertyReduction <- as.numeric(dat$povertyReduction)
+dat$country <- as.factor(dat$country)
+dat$partySystem <- as.factor(dat$partySystem)
+```
+
+```{r}
+p <- ggplot(data=dat, aes(x=effectiveParties, y=povertyReduction)) +
+  theme_bw() +
+  theme(legend.position = c(0.1, 0.85)) +
+  geom_smooth(method="lm") +
+  geom_point(aes(shape=partySystem)) +
+  theme(legend.title=element_blank()) +
+  scale_colour_manual(values=c("blue","dark green","red")) +
+  scale_shape_manual(values=c(17,15, 16)) +
+  geom_rug() +
+  theme(panel.border = element_blank(),
+        panel.background = element_rect(fill = "white"), 
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.background = element_rect())
+
+valX <- 0
+valY <- 0
+
+for (i in 1:nrow(dat)){
+  if (dat[[i,"country"]] == "Norway") {
+    valX <- -0.3
+    valY <- -.1
+  } else if (dat[[i,"country"]] == "Finland" |
+      dat[[i,"country"]] == "Sweden") {
+    valY <- -1
+  } else if (dat[[i,"country"]] == "Denmark") {
+    valY <- 4
+  } else if (dat[[i,"country"]] == "Netherlands") {
+    valY <- 4
+  }
+  
+  p <- p + annotate("text", x = dat[[i,"effectiveParties"]] + valX, y = dat[[i,"povertyReduction"]] - 1.2 + valY, label = dat[[i,"country"]], size = 2.5)
+}
+p <- p + xlab("Effective number of parties")
+p <- p + ylab("% lifted from proverty by taxes & transfers")
+p
+```

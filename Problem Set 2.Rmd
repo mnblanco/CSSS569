@@ -1,0 +1,110 @@
+---
+title: "Problem Set # 2"
+author: "Marjorie Blanco"
+date: "February 8, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE, warning=FALSE, error=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(gapminder)
+```
+
+# Life Expectancy in the Americas
+
+```{r}
+ggplot(data = gapminder %>% filter(continent == "Americas"),
+       aes(x = year, y= lifeExp, group = country)) +
+  geom_point(color = "dodgerblue") +
+  geom_line() +
+  facet_wrap( ~ country) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 8)) +
+  xlab("Year") +
+  ylab("Life expectancy") +
+  ggtitle("Life Expectancy in the Americas") 
+```
+
+# Central America GDP per capita
+
+```{r}
+countries <- c("Belize", "Costa Rica","El Salvador", "Guatemala", "Honduras", "Nicaragua", "Panama")
+ggplot(data = gapminder%>% filter(country %in% countries),
+       aes(x = year, y = gdpPercap, group = country)) +
+  geom_line(alpha = 0.5) +
+  facet_wrap( ~ country) +
+  xlab("Year") +
+  ylab("GDP per capita") +
+  ggtitle("GDP per capita Over Time") +
+  guides(color = FALSE) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) 
+```
+
+# Life Expectancy in the Africa
+
+```{r}
+ggplot(data = gapminder %>% filter(continent == "Africa"),
+       aes(x = lifeExp)) +
+  geom_histogram(bins = 10, colour="black", fill = "dodgerblue") + 
+  facet_wrap( ~ year) + 
+  xlab("Years") +
+  ylab("Life Expectancy") +
+  ggtitle("Life Expectancy Over Time in Africa") +
+  theme_bw()
+```
+
+# Life Expectancy in the Central America
+
+```{r}
+ggplot(data = gapminder %>% filter(country %in% countries),
+       aes(x = year, y = lifeExp, group = country)) +
+  xlab("Year") +
+  ylab("Life Expectancy") +
+  geom_line(alpha = 0.75) +
+  facet_wrap( ~ country, nrow = 5) + 
+  scale_size_manual(name = "Unit", values = c("Actual" = 1)) +
+  scale_x_log10(breaks = c(1950, 1970, 1990, 2010)) +
+  theme_minimal(base_size = 8) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  theme_light()
+```
+
+# Life Expectancy Haiti vs. Nicaragua
+
+```{r}
+ggplot(gapminder %>% filter(country %in% c("Haiti", "Nicaragua")),
+       aes(x = year , y = lifeExp)) +
+  geom_line(aes(linetype = country, color = country), show.legend = FALSE) +
+  geom_point(aes(size = country), shape = 21, fill = "white", show.legend = FALSE) +
+  annotate("text", x = c(1975, 1985), y = c(56, 43), size = 6, label = c("Haiti", "Nicaragua")) +
+  scale_size_manual(values = c(3, 3)) +
+  labs(x = "Year", y = "Life Expectancy") +
+  ggtitle("Life Expectancy in Haiti vs. Nicaragua") +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size = rel(1.2),
+                                  face = "bold",
+                                  vjust = 1.5))
+```
+
+# GPD per capita in the Central America
+
+```{r}
+ggplot(data = gapminder %>% filter(country %in% countries),
+       aes(x = country, y = gdpPercap)) +
+  geom_boxplot(outlier.shape = 5) + 
+  coord_flip() +
+  labs(y = "GPD per capita") +
+  ggtitle("Box Plot Summary of GPD per capita in Central America from 1952-2007") +
+  theme_classic() +
+  theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          plot.title = element_text(size = rel(1.2), face = "bold", vjust = 1.5),
+          axis.ticks.y = element_blank(),
+          axis.title.y = element_blank())
+```
